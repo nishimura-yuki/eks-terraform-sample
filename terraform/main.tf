@@ -16,6 +16,15 @@ provider "aws" {
   region = var.aws_region
 }
 
+resource "aws_kms_key" "eks_kms_key" {
+  description             = "EKS Secret Master Key"
+}
+
+resource "aws_kms_alias" "eks_kms_alias" {
+  name          = "alias/eks-${var.app_name}"
+  target_key_id = aws_kms_key.eks_kms_key.key_id
+}
+
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
   cluster_name    = "${var.app_name}-cluster"
@@ -25,6 +34,15 @@ module "eks" {
   vpc_id          = var.aws_vpc_settings.vpc_id
   enable_irsa     = true
   kubeconfig_output_path = "./eks_kubeconfig"
+
+  # 2021/6/16 EKSにKMSを関連付ける設定だがうまく機能しない模様
+  # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1338
+  #cluster_encryption_config = [
+  #  {
+  #    provider_key_arn = aws_kms_key.eks_kms_key.arn
+  #    resources        = ["secrets"]
+  #  }
+  #]
 
   node_groups = [{
     name_prefix = "${var.app_name}-nodegroup-"
