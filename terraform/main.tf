@@ -17,7 +17,7 @@ provider "aws" {
 }
 
 resource "aws_kms_key" "eks_kms_key" {
-  description             = "EKS Secret Master Key"
+  description = "EKS Secret Master Key"
 }
 
 resource "aws_kms_alias" "eks_kms_alias" {
@@ -69,6 +69,11 @@ resource "local_file" "serviceaccount" {
       namespace: kube-system
     EOT
     filename = "${path.module}/../manifest/aws-load-balancer-controller/serviceaccount.yaml"
+}
+
+resource "aws_iam_role_policy_attachment" "container_insights_role_attach" {
+  role       = module.eks.worker_iam_role_name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
 }
 
 resource "aws_iam_role_policy_attachment" "aws_loadbalancer_controller_role_attach" {

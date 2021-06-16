@@ -64,3 +64,25 @@ cd manifest/ingress
 
 kubectl apply -f deployment.yaml
 ```
+
+### その他
+
+#### KMSでsecretsを暗号化する場合
+EKSのコンソール画面から 設定 > 詳細 > シークレットの暗号化 の有効化を選択してKMSのキーを選ぶ
+(KMSのキーはterraformで作成済み)
+
+#### Container Insights でログとパフォーマンスを確認する
+以下を実行(CLUSTER_NAME と REGION は適宜置き換え)
+```
+ClusterName='$CLUSTER_NAME'
+LogRegion='$REGION'
+FluentBitHttpPort='2020'
+FluentBitReadFromHead='Off'
+[[ ${FluentBitReadFromHead} = 'On' ]] && FluentBitReadFromTail='Off'|| FluentBitReadFromTail='On'
+[[ -z ${FluentBitHttpPort} ]] && FluentBitHttpServer='Off' || FluentBitHttpServer='On'
+curl https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/quickstart/cwagent-fluent-bit-quickstart.yaml | sed 's/{{cluster_name}}/'${ClusterName}'/;s/{{region_name}}/'${LogRegion}'/;s/{{http_server_toggle}}/"'${FluentBitHttpServer}'"/;s/{{http_server_port}}/"'${FluentBitHttpPort}'"/;s/{{read_from_head}}/"'${FluentBitReadFromHead}'"/;s/{{read_from_tail}}/"'${FluentBitReadFromTail}'"/' | kubectl apply -f -
+```
+
+参考情報:
+[前提条件](https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/Container-Insights-prerequisites.html)
+[クイックスタートアップ](https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/Container-Insights-setup-EKS-quickstart.html)
