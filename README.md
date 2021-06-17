@@ -52,6 +52,7 @@ kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/relea
 kubectl apply -f serviceaccount.yaml
 
 # aws-load-balancer-controller
+# ※ ${CLUSTER_NAME} をEKSクラスタ名に変更しておく
 kubectl apply -f v2_2_0_full.yaml
 ```
 
@@ -62,7 +63,10 @@ kubectl apply -f v2_2_0_full.yaml
 ```
 cd manifest/ingress
 
+# ※ ${YOUR_DOMAIN} を実際にアクセス可能なドメインにしておく
 kubectl apply -f deployment.yaml
+
+# apply後しばらくするとalbが自動生成されているのでRoute53との紐付けなどを行う
 ```
 
 ### その他
