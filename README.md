@@ -72,7 +72,7 @@ kubectl apply -f deployment.yaml
 ### その他
 
 #### KMSでsecretsを暗号化する場合
-EKSのコンソール画面から 設定 > 詳細 > シークレットの暗号化 の有効化を選択してKMSのキーを選ぶ
+EKSのコンソール画面から 設定 > 詳細 > シークレットの暗号化 の有効化を選択してKMSのキーを選ぶ
 (KMSのキーはterraformで作成済み)
 
 #### Container Insights でログとパフォーマンスを確認する
